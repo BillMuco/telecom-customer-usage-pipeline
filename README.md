@@ -19,7 +19,7 @@ The walkthrough follows the verified delivery path: Airflow orchestration, Datab
 
 The pipeline gives analysts and executives a governed path from source data to answers they can use. The current implementation measures customer churn, revenue exposure, contract risk, payment-method risk, tenure patterns, and high-risk customer segments.
 
-Verified executive KPIs:
+Verified executive KPIs from the full 7,043-row IBM sample:
 
 | KPI | Value |
 | --- | ---: |
@@ -75,7 +75,7 @@ ingest_bronze
 
 Layer responsibilities:
 
-- Raw: original customer churn CSV supplied locally.
+- Raw: a generated fictional sample or the separately downloaded IBM sample.
 - Bronze: standardized source records with ingestion metadata and source-quality flags.
 - Silver: cleaned, typed, validated, and enriched customer records.
 - Gold: business-ready KPIs, churn segments, and customer risk outputs.
@@ -174,11 +174,29 @@ Install the pinned development dependency used by local checks:
 python -m pip install --requirement requirements-dev.txt
 ```
 
-Place the source CSV at:
+Prepare a safe, redistributable 100-row synthetic input:
+
+```powershell
+python .\scripts\setup_data.py --source sample
+```
+
+For the full portfolio results, download the public IBM sample directly from its
+[official watsonx sample repository](https://github.com/IBM/watsonx-ai-samples/blob/master/cpd4.5/data/customer_churn/WA_FnUseC_TelcoCustomerChurn.csv). The script verifies its SHA-256 checksum, 21-column schema,
+and 7,043-row count before installing it:
+
+```powershell
+python .\scripts\setup_data.py --source ibm
+```
+
+Both commands install the selected input at:
 
 ```text
 data/raw/customer_churn/telco_customer_churn.csv
 ```
+
+The installer never overwrites that file silently. Add `--force` only when you
+intend to replace it. Raw downloads remain excluded from Git; the committed file
+under `data/samples/` contains only generated `SYNTH-*` identifiers.
 
 Start the platform:
 
@@ -203,7 +221,7 @@ Run the complete local demonstration with one command:
 .\scripts\run_demo.ps1
 ```
 
-The script validates the local prerequisites, starts or rebuilds the Docker Compose platform, waits for Airflow, checks DAG imports, triggers a uniquely named run, monitors it to completion, prints all task states, and runs the repository validation tests. Existing containers and data are preserved.
+The script prepares the committed synthetic input when no raw CSV exists, validates the local prerequisites, starts or rebuilds the Docker Compose platform, waits for Airflow, checks DAG imports, triggers a uniquely named run, monitors it to completion, prints all task states, and runs the repository validation tests. Existing containers and data are preserved.
 
 For a faster repeat demonstration when the images are already built:
 
@@ -211,7 +229,14 @@ For a faster repeat demonstration when the images are already built:
 .\scripts\run_demo.ps1 -SkipBuild
 ```
 
-The source CSV must exist at `data/raw/customer_churn/telco_customer_churn.csv` before running the command.
+To demonstrate the verified full-dataset KPIs on a fresh clone, select IBM during setup:
+
+```powershell
+.\scripts\run_demo.ps1 -DataSource ibm
+```
+
+If a raw CSV already exists, the demo preserves it. Use `-ForceDataSetup` only
+to intentionally replace it with the selected `-DataSource`.
 
 ### Manual Alternative
 
@@ -302,7 +327,7 @@ A critical failure stops the DAG before Silver and Gold processing. See [docs/da
 ```text
 airflow/                 Airflow image
 dags/                    Airflow orchestration
-data/                    Ignored local inputs and generated layers
+data/                    Committed synthetic sample plus ignored raw/generated layers
 docker/postgres/init/    PostgreSQL initialization
 docs/                    Architecture and implementation notes
 reports/                 Bounded data-quality evidence

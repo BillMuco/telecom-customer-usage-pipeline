@@ -46,6 +46,9 @@ jobs:
       - name: Run fresh-clone tests
         run: python -m pytest -q
 
+      - name: Prepare synthetic demo input
+        run: python scripts/setup_data.py --source sample
+
       - name: Validate Docker Compose
         run: docker compose config --quiet
 

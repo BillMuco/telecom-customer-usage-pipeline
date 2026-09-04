@@ -2,6 +2,9 @@
 param(
     [switch]$SkipBuild,
     [switch]$SkipTests,
+    [ValidateSet("sample", "ibm")]
+    [string]$DataSource = "sample",
+    [switch]$ForceDataSetup,
     [int]$TimeoutSeconds = 1200,
     [int]$PollSeconds = 10
 )
@@ -73,8 +76,16 @@ try {
     if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
         throw "Docker is not available. Start Docker Desktop and try again."
     }
-    if (-not (Test-Path -LiteralPath $SourceCsv -PathType Leaf)) {
-        throw "Missing source CSV: $SourceCsv"
+    if ($ForceDataSetup -or -not (Test-Path -LiteralPath $SourceCsv -PathType Leaf)) {
+        Write-Host "Preparing the $DataSource source dataset..." -ForegroundColor Cyan
+        $setupArguments = @("$PSScriptRoot\setup_data.py", "--source", $DataSource)
+        if ($ForceDataSetup) {
+            $setupArguments += "--force"
+        }
+        & python @setupArguments
+        if ($LASTEXITCODE -ne 0) {
+            throw "Dataset setup failed."
+        }
     }
 
     Write-Host "Validating Docker Compose configuration..." -ForegroundColor Cyan
