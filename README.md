@@ -9,7 +9,7 @@
 
 Production-style portfolio project that turns telecom customer churn data into validated business metrics using Docker, Airflow, Spark, Delta Lake, Databricks SQL, Godrisoft Insights, and Slack.
 
-## 78-Second Demo
+## Demo Video
 
 ![Animated walkthrough from Airflow orchestration to Slack business recommendations](docs/demo/telecom-pipeline-demo.gif)
 
