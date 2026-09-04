@@ -1,5 +1,12 @@
 # Telecom Customer Usage Data Engineering Pipeline
 
+[![CI](https://github.com/BillMuco/telecom-customer-usage-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/BillMuco/telecom-customer-usage-pipeline/actions/workflows/ci.yml)
+[![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Apache Airflow 2.10.5](https://img.shields.io/badge/Apache%20Airflow-2.10.5-017CEE?logo=apacheairflow&logoColor=white)](https://airflow.apache.org/)
+[![Apache Spark 3.5.8](https://img.shields.io/badge/Apache%20Spark-3.5.8-E25A1C?logo=apachespark&logoColor=white)](https://spark.apache.org/)
+[![Docker Compose](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Production-style portfolio project that turns telecom customer churn data into validated business metrics using Docker, Airflow, Spark, Delta Lake, Databricks SQL, Godrisoft Insights, and Slack.
 
 ## Business Outcome
