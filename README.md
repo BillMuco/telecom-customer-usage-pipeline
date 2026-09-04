@@ -97,6 +97,21 @@ The completed validation established:
 
 ## Evidence
 
+### Airflow Orchestration
+
+![Successful Airflow run with all five pipeline tasks](docs/screenshots/airflow-successful-dag-run.png)
+
+### Databricks Analytics
+
+<details>
+<summary>View validated Databricks Gold-table evidence</summary>
+
+![Databricks contract-level churn metrics](docs/screenshots/databricks-contract-kpis.png)
+
+![Databricks payment-method churn metrics](docs/screenshots/databricks-payment-kpis.png)
+
+</details>
+
 ### Godrisoft Insights
 
 ![Godrisoft Insights answering the validated churn metric](docs/screenshots/godrisoft-insights-churn.png)
@@ -160,6 +175,24 @@ Local interfaces:
 The demonstration Airflow credentials are defined by the local Compose configuration and must be replaced outside local development.
 
 ## Run the Pipeline
+
+Run the complete local demonstration with one command:
+
+```powershell
+.\scripts\run_demo.ps1
+```
+
+The script validates the local prerequisites, starts or rebuilds the Docker Compose platform, waits for Airflow, checks DAG imports, triggers a uniquely named run, monitors it to completion, prints all task states, and runs the repository validation tests. Existing containers and data are preserved.
+
+For a faster repeat demonstration when the images are already built:
+
+```powershell
+.\scripts\run_demo.ps1 -SkipBuild
+```
+
+The source CSV must exist at `data/raw/customer_churn/telco_customer_churn.csv` before running the command.
+
+### Manual Alternative
 
 Open Airflow, enable `telecom_customer_usage_pipeline`, and select **Trigger DAG**. Alternatively:
 
