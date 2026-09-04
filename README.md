@@ -9,6 +9,12 @@
 
 Production-style portfolio project that turns telecom customer churn data into validated business metrics using Docker, Airflow, Spark, Delta Lake, Databricks SQL, Godrisoft Insights, and Slack.
 
+## 78-Second Demo
+
+![Animated walkthrough from Airflow orchestration to Slack business recommendations](docs/demo/telecom-pipeline-demo.gif)
+
+The walkthrough follows the verified delivery path: Airflow orchestration, Databricks Gold metrics, Godrisoft Insights, and actionable Slack recommendations.
+
 ## Business Outcome
 
 The pipeline gives analysts and executives a governed path from source data to answers they can use. The current implementation measures customer churn, revenue exposure, contract risk, payment-method risk, tenure patterns, and high-risk customer segments.
