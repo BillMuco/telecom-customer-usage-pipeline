@@ -7,6 +7,9 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-telecom_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-telecom_password}
       POSTGRES_DB: ${POSTGRES_DB:-telecom_analytics}
+      AIRFLOW_DB_USER: ${AIRFLOW_DB_USER:?Set AIRFLOW_DB_USER in .env}
+      AIRFLOW_DB_PASSWORD: ${AIRFLOW_DB_PASSWORD:?Set AIRFLOW_DB_PASSWORD in .env}
+      AIRFLOW_DB_NAME: ${AIRFLOW_DB_NAME:?Set AIRFLOW_DB_NAME in .env}
     ports:
       - "${POSTGRES_PORT:-5433}:5432"
     volumes:
@@ -63,17 +66,26 @@ services:
       postgres:
         condition: service_healthy
     environment: &airflow-env
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow_local_password@postgres:5432/airflow
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${AIRFLOW_DB_USER:?Set AIRFLOW_DB_USER in .env}:${AIRFLOW_DB_PASSWORD:?Set AIRFLOW_DB_PASSWORD in .env}@postgres:5432/${AIRFLOW_DB_NAME:?Set AIRFLOW_DB_NAME in .env}
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
       AIRFLOW_CONN_SPARK_LOCAL: '{"conn_type":"spark","host":"spark://spark-master","port":7077}'
+      AIRFLOW_ADMIN_USERNAME: ${AIRFLOW_ADMIN_USERNAME:?Set AIRFLOW_ADMIN_USERNAME in .env}
+      AIRFLOW_ADMIN_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD:?Set AIRFLOW_ADMIN_PASSWORD in .env}
+      AIRFLOW_ADMIN_EMAIL: ${AIRFLOW_ADMIN_EMAIL:?Set AIRFLOW_ADMIN_EMAIL in .env}
       PATH: /home/airflow/.local/bin:/usr/local/bin:/usr/bin:/bin
     volumes:
       - ./dags:/opt/airflow/dags
       - ./spark_jobs:/opt/telecom-pipeline/spark_jobs:ro
     entrypoint: [""]
-    command: bash -c "python -m airflow db migrate && (python -m airflow users create --username admin --password admin --firstname Local --lastname Admin --role Admin --email admin@example.com || true)"
+    command: >-
+      bash -c 'python -m airflow db migrate &&
+      (python -m airflow users create
+      --username "$${AIRFLOW_ADMIN_USERNAME}"
+      --password "$${AIRFLOW_ADMIN_PASSWORD}"
+      --firstname Local --lastname Admin --role Admin
+      --email "$${AIRFLOW_ADMIN_EMAIL}" || true)'
 
   airflow-webserver:
     build:

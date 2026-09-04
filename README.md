@@ -90,7 +90,7 @@ The completed validation established:
 - All five Gold tables were readable and passed output verification.
 - Seven Parquet `_SUCCESS` markers were present: one Bronze, one Silver, and five Gold.
 - No critical Bronze data-quality checks failed.
-- Three repository regression tests passed.
+- Two fresh-clone regression tests and two generated-output integration tests passed independently.
 - Databricks SQL returned the expected executive KPI row.
 - Godrisoft Insights returned the validated 26.54% churn rate.
 - Slack received and answered business questions through Godrisoft Insights.
@@ -153,6 +153,14 @@ Create the local environment file:
 Copy-Item .env.example .env
 ```
 
+Replace every `change_me_...` Airflow password in `.env` before starting Docker. Keep the values URL-safe (letters, numbers, `_`, and `-`) because the database password is used in a connection URL.
+
+Install the pinned development dependency used by local checks:
+
+```powershell
+python -m pip install --requirement requirements-dev.txt
+```
+
 Place the source CSV at:
 
 ```text
@@ -172,7 +180,7 @@ Local interfaces:
 - Spark worker: `http://localhost:8082`
 - PostgreSQL: `localhost:5433`
 
-The demonstration Airflow credentials are defined by the local Compose configuration and must be replaced outside local development.
+Airflow database and UI credentials are read from the ignored `.env` file. They are not embedded in Compose or PostgreSQL initialization scripts.
 
 ## Run the Pipeline
 
@@ -205,10 +213,22 @@ Monitor the run in Airflow until all five tasks are green.
 
 ## Validation
 
-Run the fast repository checks:
+Run the fresh-clone checks, which use only committed source and evidence files:
 
 ```powershell
 python -m pytest -q
+```
+
+After a successful pipeline run, validate the generated Parquet and Delta outputs:
+
+```powershell
+python -m pytest -q -m integration
+```
+
+Scan every tracked text file for high-confidence credential patterns:
+
+```powershell
+python .\scripts\scan_credentials.py
 ```
 
 Run layer verification through the Spark cluster:
@@ -257,8 +277,10 @@ A critical failure stops the DAG before Silver and Gold processing. See [docs/da
 ## Security and Repository Hygiene
 
 - `.env` is ignored; `.env.example` contains placeholders only.
+- Airflow database and administrator credentials are supplied through `.env`.
 - Raw source data and generated Parquet/Delta outputs are ignored.
 - Tokens, client secrets, Slack signing secrets, and OAuth credentials must never be committed.
+- GitHub Actions checks Python compilation, fresh-clone tests, Compose validity, Airflow DAG imports, and tracked-file credentials.
 - Only sanitized screenshots and bounded quality reports are intended as portfolio evidence.
 - Production deployments must replace demonstration passwords and apply organization-specific access controls.
 

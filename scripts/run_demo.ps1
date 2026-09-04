@@ -122,10 +122,16 @@ try {
     }
 
     if (-not $SkipTests) {
-        Write-Host "Running repository validation tests..." -ForegroundColor Cyan
+        Write-Host "Running fresh-clone unit tests..." -ForegroundColor Cyan
         & python -m pytest -q
         if ($LASTEXITCODE -ne 0) {
-            throw "Repository validation tests failed."
+            throw "Fresh-clone unit tests failed."
+        }
+
+        Write-Host "Running generated-output integration tests..." -ForegroundColor Cyan
+        & python -m pytest -q -m integration
+        if ($LASTEXITCODE -ne 0) {
+            throw "Generated-output integration tests failed."
         }
     }
 

@@ -21,6 +21,10 @@ Copy-Item .env.example .env
 docker compose up -d
 ```
 
+Before starting Docker, replace the `change_me_...` Airflow database and administrator passwords in `.env`. The PostgreSQL initialization script creates the Airflow role and database from those environment values on a new volume.
+
+Existing PostgreSQL volumes retain the credentials with which they were originally initialized. Changing `AIRFLOW_DB_PASSWORD` later requires a matching database-role password update or an intentional local database reset.
+
 ## Verify Services
 
 Check containers:
