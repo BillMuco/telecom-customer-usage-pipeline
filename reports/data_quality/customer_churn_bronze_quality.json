@@ -1,0 +1,161 @@
+{
+  "dataset": "bronze.customer_churn",
+  "checked_at_utc": "2026-09-03T21:48:27.608980+00:00",
+  "row_count": 7043,
+  "column_count": 25,
+  "failed_critical_count": 0,
+  "checks": [
+    {
+      "name": "required_columns_present",
+      "dimension": "completeness",
+      "severity": "critical",
+      "status": "PASS",
+      "observed_value": "None",
+      "rule": "All expected bronze columns must be present."
+    },
+    {
+      "name": "row_count_positive",
+      "dimension": "completeness",
+      "severity": "critical",
+      "status": "PASS",
+      "observed_value": 7043,
+      "rule": "Bronze dataset must contain at least one row."
+    },
+    {
+      "name": "customer_id_not_null",
+      "dimension": "completeness",
+      "severity": "critical",
+      "status": "PASS",
+      "observed_value": 0,
+      "rule": "customer_id must not be missing."
+    },
+    {
+      "name": "customer_id_unique",
+      "dimension": "uniqueness",
+      "severity": "critical",
+      "status": "PASS",
+      "observed_value": 0,
+      "rule": "customer_id must be unique in the customer baseline dataset."
+    },
+    {
+      "name": "gender_domain_valid",
+      "dimension": "validity",
+      "severity": "critical",
+      "status": "PASS",
+      "observed_value": 0,
+      "rule": "gender must be one of: ['Female', 'Male']."
+    },
+    {
+      "name": "senior_citizen_domain_valid",
+      "dimension": "validity",
+      "severity": "critical",
+      "status": "PASS",
+      "observed_value": 0,
+      "rule": "senior_citizen must be one of: [0, 1]."
+    },
+    {
+      "name": "partner_domain_valid",
+      "dimension": "validity",
+      "severity": "critical",
+      "status": "PASS",
+      "observed_value": 0,
+      "rule": "partner must be one of: ['No', 'Yes']."
+    },
+    {
+      "name": "dependents_domain_valid",
+      "dimension": "validity",
+      "severity": "critical",
+      "status": "PASS",
+      "observed_value": 0,
+      "rule": "dependents must be one of: ['No', 'Yes']."
+    },
+    {
+      "name": "phone_service_domain_valid",
+      "dimension": "validity",
+      "severity": "critical",
+      "status": "PASS",
+      "observed_value": 0,
+      "rule": "phone_service must be one of: ['No', 'Yes']."
+    },
+    {
+      "name": "internet_service_domain_valid",
+      "dimension": "validity",
+      "severity": "critical",
+      "status": "PASS",
+      "observed_value": 0,
+      "rule": "internet_service must be one of: ['DSL', 'Fiber optic', 'No']."
+    },
+    {
+      "name": "contract_domain_valid",
+      "dimension": "validity",
+      "severity": "critical",
+      "status": "PASS",
+      "observed_value": 0,
+      "rule": "contract must be one of: ['Month-to-month', 'One year', 'Two year']."
+    },
+    {
+      "name": "paperless_billing_domain_valid",
+      "dimension": "validity",
+      "severity": "critical",
+      "status": "PASS",
+      "observed_value": 0,
+      "rule": "paperless_billing must be one of: ['No', 'Yes']."
+    },
+    {
+      "name": "churn_domain_valid",
+      "dimension": "validity",
+      "severity": "critical",
+      "status": "PASS",
+      "observed_value": 0,
+      "rule": "churn must be one of: ['No', 'Yes']."
+    },
+    {
+      "name": "tenure_non_negative",
+      "dimension": "accuracy",
+      "severity": "critical",
+      "status": "PASS",
+      "observed_value": 0,
+      "rule": "tenure must not be negative."
+    },
+    {
+      "name": "monthly_charges_non_negative",
+      "dimension": "accuracy",
+      "severity": "critical",
+      "status": "PASS",
+      "observed_value": 0,
+      "rule": "monthly_charges must not be negative."
+    },
+    {
+      "name": "total_charges_non_negative",
+      "dimension": "accuracy",
+      "severity": "critical",
+      "status": "PASS",
+      "observed_value": 0,
+      "rule": "total_charges must not be negative when present."
+    },
+    {
+      "name": "blank_total_charges_only_for_zero_tenure",
+      "dimension": "consistency",
+      "severity": "critical",
+      "status": "PASS",
+      "observed_value": 0,
+      "rule": "Blank total_charges is allowed only when tenure is zero."
+    },
+    {
+      "name": "blank_total_charges_tracked",
+      "dimension": "completeness",
+      "severity": "warning",
+      "status": "PASS",
+      "observed_value": 11,
+      "rule": "Blank source TotalCharges values must be tracked for silver cleaning."
+    },
+    {
+      "name": "ingestion_metadata_present",
+      "dimension": "timeliness",
+      "severity": "critical",
+      "status": "PASS",
+      "observed_value": 0,
+      "rule": "source_file and ingested_at_utc must be populated."
+    }
+  ]
+}
