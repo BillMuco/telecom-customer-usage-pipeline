@@ -6,6 +6,7 @@ venv/
 __pycache__/
 *.pyc
 .pytest_cache/
+.pytest-demo-*/
 .idea/
 .vscode/
 *.log
