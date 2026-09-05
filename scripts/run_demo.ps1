@@ -43,9 +43,21 @@ function Wait-ForScheduler {
 
     Write-Host "Waiting for the Airflow scheduler..." -ForegroundColor Cyan
     while ([DateTime]::UtcNow -lt $Deadline) {
-        & docker compose exec -T airflow-scheduler `
-            python -m airflow jobs check --job-type SchedulerJob --local *> $null
-        if ($LASTEXITCODE -eq 0) {
+        # Windows PowerShell converts native stderr into an ErrorRecord. During
+        # startup Airflow legitimately reports "No alive jobs found", so keep
+        # that probe non-terminating and use its process exit code for polling.
+        $previousErrorActionPreference = $ErrorActionPreference
+        try {
+            $ErrorActionPreference = "Continue"
+            & docker compose exec -T airflow-scheduler `
+                python -m airflow jobs check --job-type SchedulerJob --local *> $null
+            $schedulerCheckExitCode = $LASTEXITCODE
+        }
+        finally {
+            $ErrorActionPreference = $previousErrorActionPreference
+        }
+
+        if ($schedulerCheckExitCode -eq 0) {
             return
         }
         Start-Sleep -Seconds 5
@@ -156,3 +168,4 @@ try {
 finally {
     Pop-Location
 }
+
