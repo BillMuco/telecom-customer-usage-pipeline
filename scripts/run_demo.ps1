@@ -16,6 +16,7 @@ $DagId = "telecom_customer_usage_pipeline"
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $SourceCsv = Join-Path $ProjectRoot "data\raw\customer_churn\telco_customer_churn.csv"
 $RunId = "demo__$([DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ'))"
+$PytestBaseTemp = Join-Path $ProjectRoot ".pytest-demo-$([Guid]::NewGuid().ToString('N'))"
 
 function Invoke-DockerCompose {
     param(
@@ -160,13 +161,13 @@ try {
 
     if (-not $SkipTests) {
         Write-Host "Running fresh-clone unit tests..." -ForegroundColor Cyan
-        & python -m pytest -q
+        & python -m pytest -q -p no:cacheprovider --basetemp $PytestBaseTemp
         if ($LASTEXITCODE -ne 0) {
             throw "Fresh-clone unit tests failed."
         }
 
         Write-Host "Running generated-output integration tests..." -ForegroundColor Cyan
-        & python -m pytest -q -m integration
+        & python -m pytest -q -m integration -p no:cacheprovider --basetemp $PytestBaseTemp
         if ($LASTEXITCODE -ne 0) {
             throw "Generated-output integration tests failed."
         }
@@ -181,5 +182,8 @@ try {
 }
 finally {
     Pop-Location
+    if (Test-Path -LiteralPath $PytestBaseTemp) {
+        Remove-Item -LiteralPath $PytestBaseTemp -Recurse -Force
+    }
 }
 
