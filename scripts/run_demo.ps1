@@ -77,10 +77,12 @@ function Wait-ForScheduler {
 function Get-DagState {
     $output = Invoke-DockerCompose -Capture -Arguments @(
         "exec", "-T", "airflow-scheduler",
-        "python", "-m", "airflow", "dags", "state", $DagId, $RunId
+        "python", "-c",
+        "import sys; from airflow.models import DagRun; from airflow.settings import Session; session = Session(); run = session.query(DagRun).filter(DagRun.dag_id == sys.argv[1], DagRun.run_id == sys.argv[2]).one_or_none(); print(run.state if run else 'not_found'); session.close()",
+        $DagId, $RunId
     )
 
-    $knownStates = @("queued", "running", "success", "failed")
+    $knownStates = @("not_found", "queued", "running", "success", "failed")
     $state = $output |
         ForEach-Object { $_.ToString().Trim().ToLowerInvariant() } |
         Where-Object { $knownStates -contains $_ } |
@@ -88,6 +90,9 @@ function Get-DagState {
 
     if (-not $state) {
         throw "Could not determine the DAG state from Airflow output."
+    }
+    if ($state -eq "not_found") {
+        return "queued"
     }
     return $state
 }
