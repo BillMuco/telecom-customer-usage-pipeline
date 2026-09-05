@@ -25,8 +25,17 @@ function Invoke-DockerCompose {
     )
 
     if ($Capture) {
-        $output = & docker compose @Arguments 2>&1
-        if ($LASTEXITCODE -ne 0) {
+        $previousErrorActionPreference = $ErrorActionPreference
+        try {
+            $ErrorActionPreference = "Continue"
+            $output = & docker compose @Arguments 2>&1
+            $dockerComposeExitCode = $LASTEXITCODE
+        }
+        finally {
+            $ErrorActionPreference = $previousErrorActionPreference
+        }
+
+        if ($dockerComposeExitCode -ne 0) {
             throw "docker compose $($Arguments -join ' ') failed:`n$($output -join [Environment]::NewLine)"
         }
         return $output
